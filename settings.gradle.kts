@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "DistanceTrackerApp"
-include ':app'
+include(":app")
