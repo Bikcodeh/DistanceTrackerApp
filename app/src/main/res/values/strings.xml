@@ -5,4 +5,5 @@
     <string name="permission_description">Welcome to Distance Tracker. In order to use our application we will first need to request location permission from you. Otherwise we will not be able to provide you with our service. If you agree and wish to continue tap on the button below.</string>
     <string name="permission_required">Permission Required</string>
     <string name="welcome_image">Welcome image</string>
+    <string name="permission_required_description">This application cannot work without Location Permission</string>
 </resources>
