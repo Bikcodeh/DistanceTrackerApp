@@ -5,6 +5,10 @@ plugins {
     id(Modules.Plugins.androidApplication)
     id(Modules.Plugins.kotlinAndroid)
     id(Modules.Plugins.mapsPlatform)
+    id(Modules.Plugins.navigationArgs)
+    id(Modules.Plugins.kotlinParcelize)
+    id(Modules.Plugins.kotlinKapt)
+    id(Modules.Plugins.daggerHilt)
 }
 android {
     compileSdk = Modules.AndroidSdk.compile
@@ -93,6 +97,10 @@ android {
         jvmTarget = "1.8"
     }
 
+    dataBinding {
+        android.buildFeatures.dataBinding = true
+    }
+
     viewBinding {
         android.buildFeatures.viewBinding = true
     }
@@ -114,7 +122,18 @@ dependencies {
     implementation(Modules.Libraries.coroutinesCoreLib)
     implementation(Modules.Libraries.appCenterAnalyticsLib)
     implementation(Modules.Libraries.appCenterCrashesLib)
+    implementation(Modules.Libraries.navigationFragmentLib)
+    implementation(Modules.Libraries.navigationUILib)
+    implementation(Modules.Libraries.servicesLocationLib)
+    implementation(Modules.Libraries.mapsUtilLib)
+    implementation(Modules.Libraries.easyPermissionsLib)
+    implementation(Modules.Libraries.daggerHiltAndroidLib)
+    kapt(Modules.Libraries.daggerHiltCompilerLib)
     testImplementation(Modules.TestLibraries.jUnitLib)
     androidTestImplementation(Modules.TestLibraries.androidxJUnitLib)
     androidTestImplementation(Modules.TestLibraries.espressoCoreLib)
+}
+
+kapt {
+    correctErrorTypes = true
 }

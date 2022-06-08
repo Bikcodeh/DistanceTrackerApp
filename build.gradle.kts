@@ -6,6 +6,14 @@ plugins {
     id(Modules.Plugins.mapsPlatform) version Modules.Plugins.Version.mapsPlatform apply false
 }
 
+buildscript {
+
+    dependencies {
+        classpath(Modules.Plugins.daggerGradle)
+        classpath(Modules.Plugins.navigationSafeArgs)
+    }
+}
+
 tasks.register("clean").configure {
     delete("build")
 }
