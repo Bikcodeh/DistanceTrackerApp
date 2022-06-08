@@ -10,6 +10,7 @@ plugins {
     id(Modules.Plugins.kotlinKapt)
     id(Modules.Plugins.daggerHilt)
 }
+
 android {
     compileSdk = Modules.AndroidSdk.compile
 
@@ -128,6 +129,8 @@ dependencies {
     implementation(Modules.Libraries.mapsUtilLib)
     implementation(Modules.Libraries.easyPermissionsLib)
     implementation(Modules.Libraries.daggerHiltAndroidLib)
+    implementation(Modules.Libraries.mapsServicesLib)
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
     kapt(Modules.Libraries.daggerHiltCompilerLib)
     testImplementation(Modules.TestLibraries.jUnitLib)
     androidTestImplementation(Modules.TestLibraries.androidxJUnitLib)

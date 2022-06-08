@@ -49,6 +49,7 @@ object Modules {
             const val mapsUtil = "2.2.0"
             const val daggerHilt = "2.42"
             const val easyPermissions = "3.0.0"
+            const val mapsServices = "18.0.2"
         }
         const val coreKtxLib = "androidx.core:core-ktx:${Versions.coreKtx}"
         const val appCompatLib = "androidx.appcompat:appcompat:${Versions.appCompat}"
@@ -69,6 +70,8 @@ object Modules {
         const val servicesLocationLib = "com.google.android.gms:play-services-location:${Versions.servicesLocation}"
         /** maps util */
         const val mapsUtilLib = "com.google.maps.android:android-maps-utils:${Versions.mapsUtil}"
+        /** google maps */
+        const val mapsServicesLib = "com.google.android.gms:play-services-maps:${Versions.mapsServices}"
         /** Dagger hilt */
         const val daggerHiltAndroidLib = "com.google.dagger:hilt-android:${Versions.daggerHilt}"
         const val daggerHiltCompilerLib = "com.google.dagger:hilt-compiler:${Versions.daggerHilt}"
