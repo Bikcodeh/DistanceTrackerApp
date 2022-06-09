@@ -1,4 +1,4 @@
-package com.bikcodeh.distancetrackerapp
+package com.bikcodeh.distancetrackerapp.ui.maps
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.bikcodeh.distancetrackerapp.R
 import com.bikcodeh.distancetrackerapp.databinding.FragmentMapsBinding
 import com.bikcodeh.distancetrackerapp.services.TrackerService
 import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_START

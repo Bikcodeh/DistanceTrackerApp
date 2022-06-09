@@ -1,4 +1,4 @@
-package com.bikcodeh.distancetrackerapp
+package com.bikcodeh.distancetrackerapp.ui.permission
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bikcodeh.distancetrackerapp.R
 import com.bikcodeh.distancetrackerapp.databinding.FragmentPermissionBinding
 import com.bikcodeh.distancetrackerapp.util.Permissions.hasLocationPermission
 import com.bikcodeh.distancetrackerapp.util.Permissions.requestLocationPermission

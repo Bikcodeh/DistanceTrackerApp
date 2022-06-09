@@ -12,6 +12,7 @@ import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_START
 import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_STOP
 import com.bikcodeh.distancetrackerapp.util.Constants.NOTIFICATION_CHANNEL_ID
 import com.bikcodeh.distancetrackerapp.util.Constants.NOTIFICATION_CHANNEL_NAME
+import com.bikcodeh.distancetrackerapp.util.Constants.NOTIFICATION_ID
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,6 +43,7 @@ class TrackerService: LifecycleService() {
             when (it.action) {
                 ACTION_SERVICE_START -> {
                     started.postValue(true)
+                    startForegroundService()
                 }
                 ACTION_SERVICE_STOP -> {
                     started.postValue(false)
@@ -49,6 +51,11 @@ class TrackerService: LifecycleService() {
             }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun startForegroundService() {
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, notification.build())
     }
 
     private fun createNotificationChannel() {

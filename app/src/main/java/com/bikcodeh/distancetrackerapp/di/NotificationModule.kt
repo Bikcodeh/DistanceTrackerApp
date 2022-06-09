@@ -4,10 +4,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.bikcodeh.distancetrackerapp.MainActivity
 import com.bikcodeh.distancetrackerapp.R
-import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_NAVIGATE_TO_MAPS_FRAGMENT
+import com.bikcodeh.distancetrackerapp.ui.MainActivity
 import com.bikcodeh.distancetrackerapp.util.Constants.NOTIFICATION_CHANNEL_ID
 import com.bikcodeh.distancetrackerapp.util.Constants.PENDING_INTENT_REQUEST_CODE
 import dagger.Module
@@ -26,13 +26,16 @@ object NotificationModule {
     fun providePendingIntent(
         @ApplicationContext context: Context
     ): PendingIntent {
+        val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
         return PendingIntent.getActivity(
             context,
             PENDING_INTENT_REQUEST_CODE,
-            Intent(context, MainActivity::class.java).apply {
-                this.action = ACTION_NAVIGATE_TO_MAPS_FRAGMENT
-            },
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            Intent(context, MainActivity::class.java),
+            flag
         )
     }
 
@@ -47,6 +50,7 @@ object NotificationModule {
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_run)
             .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
     }
 
     @ServiceScoped
