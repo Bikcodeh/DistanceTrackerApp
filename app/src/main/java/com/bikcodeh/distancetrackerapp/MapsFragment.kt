@@ -2,14 +2,15 @@ package com.bikcodeh.distancetrackerapp
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.bikcodeh.distancetrackerapp.databinding.FragmentMapsBinding
+import com.bikcodeh.distancetrackerapp.util.Extension.disable
 import com.bikcodeh.distancetrackerapp.util.Extension.hide
 import com.bikcodeh.distancetrackerapp.util.Extension.show
 import com.bikcodeh.distancetrackerapp.util.Permissions.hasBackgroundLocationPermission
@@ -43,7 +44,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
-
         with(binding) {
             btnStar.setOnClickListener {
                 onStartButtonClick()
@@ -72,6 +72,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             isTiltGesturesEnabled = false
             isScrollGesturesEnabled = false
         }
+        //checkLocationPermission()
     }
 
     override fun onDestroyView() {
@@ -86,15 +87,53 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             binding.tvMyLocation.hide()
             binding.btnStar.show()
         }
-        return true
+        return false
     }
 
     private fun onStartButtonClick() {
         if (hasBackgroundLocationPermission(requireContext())) {
-            Toast.makeText(context, "already enabled", Toast.LENGTH_SHORT).show()
+            startCountDown()
+            binding.btnStar.disable()
+            binding.btnStar.hide()
+            binding.btnStop.show()
         } else {
             requestBackgroundLocationPermission(this)
         }
+    }
+
+    private fun startCountDown() {
+        with(binding) {
+            tvTimer.show()
+            btnStop.disable()
+        }
+
+        val timer: CountDownTimer = object : CountDownTimer(4000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val currentSecond = millisUntilFinished / 1000
+                if (currentSecond.toString() == "0") {
+                    binding.tvTimer.text = getString(R.string.go_label)
+                    binding.tvTimer.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.black
+                        )
+                    )
+                } else {
+                    binding.tvTimer.text = currentSecond.toString()
+                    binding.tvTimer.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.red
+                        )
+                    )
+                }
+            }
+
+            override fun onFinish() {
+                binding.tvTimer.hide()
+            }
+        }
+        timer.start()
     }
 
     override fun onRequestPermissionsResult(
@@ -106,8 +145,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
+    @SuppressLint("MissingPermission")
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        //findNavController().navigate(R.id.action_permissionFragment_to_mapsFragment)
+
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
