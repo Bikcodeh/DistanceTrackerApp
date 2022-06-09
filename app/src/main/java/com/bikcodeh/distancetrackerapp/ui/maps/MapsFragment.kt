@@ -27,7 +27,9 @@ import com.bikcodeh.distancetrackerapp.util.Extension.enable
 import com.bikcodeh.distancetrackerapp.util.Extension.hide
 import com.bikcodeh.distancetrackerapp.util.Extension.show
 import com.bikcodeh.distancetrackerapp.util.Permissions.hasBackgroundLocationPermission
+import com.bikcodeh.distancetrackerapp.util.Permissions.hasLocationPermission
 import com.bikcodeh.distancetrackerapp.util.Permissions.requestBackgroundLocationPermission
+import com.bikcodeh.distancetrackerapp.util.Permissions.requestLocationPermission
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -45,6 +47,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
+    private var hasLocationEnabled = true
 
     private lateinit var map: GoogleMap
     private var locationList = mutableListOf<LatLng>()
@@ -78,7 +81,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 onStopButtonClick()
             }
         }
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient((requireActivity()))
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient((requireActivity()))
         return binding.root
     }
 
@@ -88,21 +92,28 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         mapFragment?.getMapAsync(this)
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        map.isMyLocationEnabled = true
-        map.setOnMyLocationButtonClickListener(this)
-        map.setOnMarkerClickListener(this)
-        map.uiSettings.apply {
-            isZoomControlsEnabled = false
-            isZoomGesturesEnabled = false
-            isRotateGesturesEnabled = false
-            isCompassEnabled = false
-            isTiltGesturesEnabled = false
-            isScrollGesturesEnabled = false
+        setupMap(hasLocationEnabled)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setupMap(hasLocation: Boolean) {
+        if (hasLocation) {
+            map.isMyLocationEnabled = true
+            map.setOnMyLocationButtonClickListener(this)
+            map.setOnMarkerClickListener(this)
+            map.uiSettings.apply {
+                isZoomControlsEnabled = false
+                isZoomGesturesEnabled = false
+                isRotateGesturesEnabled = false
+                isCompassEnabled = false
+                isTiltGesturesEnabled = false
+                isScrollGesturesEnabled = false
+            }
+            observeTrackService()
         }
-        observeTrackService()
     }
 
     private fun observeTrackService() {
@@ -122,14 +133,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
         TrackerService.stopTime.observe(viewLifecycleOwner) {
             stopTime = it
-            if ( stopTime != 0L) {
+            if (stopTime != 0L) {
                 showBiggerPicture()
                 displayResults()
             }
         }
 
         TrackerService.started.observe(viewLifecycleOwner) {
-            started.value= it
+            started.value = it
         }
     }
 
@@ -191,9 +202,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             for (marker in markerList) {
                 marker.remove()
             }
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(
-                setCameraPosition(lastKnownLocation)
-            ))
+            map.animateCamera(
+                CameraUpdateFactory.newCameraPosition(
+                    setCameraPosition(lastKnownLocation)
+                )
+            )
             locationList.clear()
             markerList.clear()
             binding.btnReset.hide()
@@ -201,7 +214,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         }
     }
 
-    private fun drawPolyline(){
+    private fun drawPolyline() {
         val polyline = map.addPolyline(
             PolylineOptions().apply {
                 width(10f)
@@ -327,7 +340,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     @SuppressLint("MissingPermission")
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-
+        setupMap(true)
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
@@ -341,5 +354,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     override fun onMarkerClick(marker: Marker): Boolean {
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!hasLocationPermission(requireContext())) {
+            hasLocationEnabled = false
+            requestLocationPermission(this)
+        }
     }
 }

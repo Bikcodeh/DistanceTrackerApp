@@ -24,6 +24,11 @@
         <action
             android:id="@+id/action_mapsFragment_to_resultFragment"
             app:destination="@id/resultFragment" />
+        <action
+            android:id="@+id/action_mapsFragment_to_permissionFragment"
+            app:destination="@id/permissionFragment"
+            app:popUpTo="@id/permissionFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/resultFragment"
