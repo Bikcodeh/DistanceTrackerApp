@@ -2,6 +2,7 @@ package com.bikcodeh.distancetrackerapp.ui.maps
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -19,10 +20,14 @@ import com.bikcodeh.distancetrackerapp.util.Extension.hide
 import com.bikcodeh.distancetrackerapp.util.Extension.show
 import com.bikcodeh.distancetrackerapp.util.Permissions.hasBackgroundLocationPermission
 import com.bikcodeh.distancetrackerapp.util.Permissions.requestBackgroundLocationPermission
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.ButtCap
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AppSettingsDialog
@@ -85,7 +90,36 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         TrackerService.locationList.observe(viewLifecycleOwner) {
             if (it != null) {
                 locationList = it
+                drawPolyline()
+                followPolyline()
             }
+        }
+    }
+
+    private fun drawPolyline(){
+        val polyline = map.addPolyline(
+            PolylineOptions().apply {
+                width(10f)
+                color(Color.BLUE)
+                jointType(JointType.ROUND)
+                startCap(ButtCap())
+                endCap(ButtCap())
+                addAll(locationList)
+            }
+        )
+    }
+
+    private fun followPolyline() {
+        if (locationList.isNotEmpty()) {
+            map.animateCamera(
+                CameraUpdateFactory.newCameraPosition(
+                    MapUtil.setCameraPosition(
+                        locationList.last()
+                    )
+                ),
+                1000,
+                null
+            )
         }
     }
 
