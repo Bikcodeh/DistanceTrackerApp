@@ -16,4 +16,8 @@ object Extension {
     fun Button.disable() {
         isEnabled = false
     }
+
+    fun Button.enable() {
+        isEnabled = true
+    }
 }

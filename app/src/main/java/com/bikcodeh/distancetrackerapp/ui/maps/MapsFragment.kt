@@ -15,7 +15,9 @@ import com.bikcodeh.distancetrackerapp.R
 import com.bikcodeh.distancetrackerapp.databinding.FragmentMapsBinding
 import com.bikcodeh.distancetrackerapp.services.TrackerService
 import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_START
+import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_STOP
 import com.bikcodeh.distancetrackerapp.util.Extension.disable
+import com.bikcodeh.distancetrackerapp.util.Extension.enable
 import com.bikcodeh.distancetrackerapp.util.Extension.hide
 import com.bikcodeh.distancetrackerapp.util.Extension.show
 import com.bikcodeh.distancetrackerapp.util.Permissions.hasBackgroundLocationPermission
@@ -48,13 +50,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
         with(binding) {
             btnStar.setOnClickListener {
                 onStartButtonClick()
@@ -65,9 +60,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             }
 
             btnStop.setOnClickListener {
-
+                onStopButtonClick()
             }
         }
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
     }
 
     @SuppressLint("MissingPermission")
@@ -90,6 +92,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         TrackerService.locationList.observe(viewLifecycleOwner) {
             if (it != null) {
                 locationList = it
+                if (locationList.size > 1) {
+                    binding.btnStop.enable()
+                }
                 drawPolyline()
                 followPolyline()
             }
@@ -147,6 +152,17 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         } else {
             requestBackgroundLocationPermission(this)
         }
+    }
+
+    private fun onStopButtonClick() {
+        binding.btnStop.hide()
+        binding.btnStar.show()
+        stopForegroundService()
+    }
+
+    private fun stopForegroundService() {
+        binding.btnStar.disable()
+        sendActionCommandToService(ACTION_SERVICE_STOP)
     }
 
     private fun startCountDown() {
