@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
+import com.bikcodeh.distancetrackerapp.ui.maps.MapUtil
 import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_START
 import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_STOP
 import com.bikcodeh.distancetrackerapp.util.Constants.LOCATION_FASTEST_UPDATE_INTERVAL
@@ -42,9 +43,18 @@ class TrackerService: LifecycleService() {
             result?.locations?.let { locations ->
                 for (location in locations) {
                     updateLocationList(location)
+                    updateNotificationPeriodically()
                 }
             }
         }
+    }
+
+    private fun updateNotificationPeriodically() {
+        notification.apply {
+            setContentTitle("Distance Travelled")
+            setContentText(locationList.value?.let { MapUtil.calculateDistance(it) } + "km")
+        }
+        notificationManager.notify(NOTIFICATION_ID, notification.build())
     }
 
     companion object {
