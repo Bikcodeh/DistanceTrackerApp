@@ -25,7 +25,7 @@
             android:id="@+id/action_mapsFragment_to_resultFragment"
             app:destination="@id/resultFragment" />
     </fragment>
-    <fragment
+    <dialog
         android:id="@+id/resultFragment"
         android:name="com.bikcodeh.distancetrackerapp.ui.result.ResultFragment"
         android:label="fragment_result"
@@ -33,5 +33,5 @@
         <action
             android:id="@+id/action_resultFragment_to_mapsFragment"
             app:destination="@id/mapsFragment" />
-    </fragment>
+    </dialog>
 </navigation>
