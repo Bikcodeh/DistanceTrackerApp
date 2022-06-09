@@ -12,9 +12,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bikcodeh.distancetrackerapp.R
 import com.bikcodeh.distancetrackerapp.databinding.FragmentMapsBinding
+import com.bikcodeh.distancetrackerapp.model.Result
 import com.bikcodeh.distancetrackerapp.services.TrackerService
+import com.bikcodeh.distancetrackerapp.ui.maps.MapUtil.calculateDistance
+import com.bikcodeh.distancetrackerapp.ui.maps.MapUtil.calculateElapsedTime
 import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_START
 import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_STOP
 import com.bikcodeh.distancetrackerapp.util.Extension.disable
@@ -111,6 +115,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             stopTime = it
             if ( stopTime != 0L) {
                 showBiggerPicture()
+                displayResults()
             }
         }
 
@@ -132,6 +137,27 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             2000,
             null
         )
+    }
+
+    private fun displayResults() {
+        val result = Result(
+            calculateDistance(locationList),
+            calculateElapsedTime(startTime, stopTime)
+        )
+
+        lifecycleScope.launch {
+            delay(2500)
+            val directions = MapsFragmentDirections.actionMapsFragmentToResultFragment(result)
+            findNavController().navigate(directions)
+            with(binding) {
+                btnStar.apply {
+                    hide()
+                    enable()
+                }
+                btnStop.hide()
+                btnReset.show()
+            }
+        }
     }
 
     private fun drawPolyline(){

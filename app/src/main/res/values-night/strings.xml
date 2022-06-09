@@ -11,7 +11,8 @@
     <string name="tap_on_my_location_button">Tap on My Location button</string>
     <string name="background_location_permission_description">Background location permission is essential to this application. Without it we will not be able to provide our service.</string>
     <string name="go_label">GO</string>
-    <string name="Distance">distance</string>
+    <string name="distance">Distance</string>
     <string name="share">Share</string>
     <string name="time">Time</string>
+    <string name="result">%1$s km</string>
 </resources>
