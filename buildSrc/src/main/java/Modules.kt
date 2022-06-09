@@ -48,7 +48,7 @@ object Modules {
             const val servicesLocation = "17.1.0"
             const val mapsUtil = "2.2.0"
             const val daggerHilt = "2.42"
-            const val easyPermissions = "3.0.0"
+            const val easyPermissions = "1.0.0"
             const val mapsServices = "18.0.2"
         }
         const val coreKtxLib = "androidx.core:core-ktx:${Versions.coreKtx}"
@@ -76,7 +76,7 @@ object Modules {
         const val daggerHiltAndroidLib = "com.google.dagger:hilt-android:${Versions.daggerHilt}"
         const val daggerHiltCompilerLib = "com.google.dagger:hilt-compiler:${Versions.daggerHilt}"
         /** easy permissions */
-        const val easyPermissionsLib = "pub.devrel:easypermissions:${Versions.easyPermissions}"
+        const val easyPermissionsLib = "com.vmadalin:easypermissions-ktx:${Versions.easyPermissions}"
     }
 
     object TestLibraries {

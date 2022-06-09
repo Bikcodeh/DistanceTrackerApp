@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import com.bikcodeh.distancetrackerapp.R
 import com.bikcodeh.distancetrackerapp.util.Constants.PERMISSION_BACKGROUND_LOCATION_REQUEST_CODE
 import com.bikcodeh.distancetrackerapp.util.Constants.PERMISSION_LOCATION_REQUEST_CODE
-import pub.devrel.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.EasyPermissions
 
 object Permissions {
 

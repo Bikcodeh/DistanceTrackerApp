@@ -10,8 +10,8 @@ import com.bikcodeh.distancetrackerapp.R
 import com.bikcodeh.distancetrackerapp.databinding.FragmentPermissionBinding
 import com.bikcodeh.distancetrackerapp.util.Permissions.hasLocationPermission
 import com.bikcodeh.distancetrackerapp.util.Permissions.requestLocationPermission
-import pub.devrel.easypermissions.AppSettingsDialog
-import pub.devrel.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.dialogs.SettingsDialog
 
 class PermissionFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private var _binding: FragmentPermissionBinding? = null
@@ -47,16 +47,17 @@ class PermissionFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
-    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        findNavController().navigate(R.id.action_permissionFragment_to_mapsFragment)
-    }
 
-    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            AppSettingsDialog.Builder(requireActivity())
+            SettingsDialog.Builder(requireActivity())
                 .build().show()
         } else {
             requestLocationPermission(this)
         }
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
+        findNavController().navigate(R.id.action_permissionFragment_to_mapsFragment)
     }
 }

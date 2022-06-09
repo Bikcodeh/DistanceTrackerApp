@@ -37,10 +37,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pub.devrel.easypermissions.AppSettingsDialog
-import pub.devrel.easypermissions.EasyPermissions
 
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
     EasyPermissions.PermissionCallbacks, GoogleMap.OnMarkerClickListener {
@@ -339,13 +339,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     }
 
     @SuppressLint("MissingPermission")
-    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
         setupMap(true)
     }
 
-    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            AppSettingsDialog.Builder(requireActivity())
+            SettingsDialog.Builder(requireActivity())
                 .build().show()
         } else {
             requestBackgroundLocationPermission(this)
