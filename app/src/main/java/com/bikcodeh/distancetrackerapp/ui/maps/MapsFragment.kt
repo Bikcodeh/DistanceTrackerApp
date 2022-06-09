@@ -19,6 +19,7 @@ import com.bikcodeh.distancetrackerapp.model.Result
 import com.bikcodeh.distancetrackerapp.services.TrackerService
 import com.bikcodeh.distancetrackerapp.ui.maps.MapUtil.calculateDistance
 import com.bikcodeh.distancetrackerapp.ui.maps.MapUtil.calculateElapsedTime
+import com.bikcodeh.distancetrackerapp.ui.maps.MapUtil.setCameraPosition
 import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_START
 import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_STOP
 import com.bikcodeh.distancetrackerapp.util.Extension.disable
@@ -27,6 +28,8 @@ import com.bikcodeh.distancetrackerapp.util.Extension.hide
 import com.bikcodeh.distancetrackerapp.util.Extension.show
 import com.bikcodeh.distancetrackerapp.util.Permissions.hasBackgroundLocationPermission
 import com.bikcodeh.distancetrackerapp.util.Permissions.requestBackgroundLocationPermission
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -49,6 +52,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     private var stopTime = 0L
 
     val started = MutableLiveData<Boolean>(false)
+    private var polylineList = mutableListOf<Polyline>()
+
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,13 +70,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             }
 
             btnReset.setOnClickListener {
-
+                onResetButtonClicked()
             }
 
             btnStop.setOnClickListener {
                 onStopButtonClick()
             }
         }
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient((requireActivity()))
         return binding.root
     }
 
@@ -160,6 +167,25 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         }
     }
 
+    @SuppressLint("MissingPermission")
+    private fun mapReset() {
+        fusedLocationProviderClient.lastLocation.addOnCompleteListener {
+            val lastKnownLocation = LatLng(
+                it.result.latitude,
+                it.result.longitude
+            )
+            for (polyline in polylineList) {
+                polyline.remove()
+            }
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(
+                setCameraPosition(lastKnownLocation)
+            ))
+            locationList.clear()
+            binding.btnReset.hide()
+            binding.btnStar.show()
+        }
+    }
+
     private fun drawPolyline(){
         val polyline = map.addPolyline(
             PolylineOptions().apply {
@@ -171,6 +197,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 addAll(locationList)
             }
         )
+        polylineList.add(polyline)
     }
 
     private fun followPolyline() {
@@ -217,6 +244,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         binding.btnStop.hide()
         binding.btnStar.show()
         stopForegroundService()
+    }
+
+    private fun onResetButtonClicked() {
+        mapReset()
     }
 
     private fun stopForegroundService() {
