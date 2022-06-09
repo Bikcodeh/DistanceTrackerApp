@@ -1,6 +1,7 @@
 package com.bikcodeh.distancetrackerapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -10,6 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bikcodeh.distancetrackerapp.databinding.FragmentMapsBinding
+import com.bikcodeh.distancetrackerapp.services.TrackerService
+import com.bikcodeh.distancetrackerapp.util.Constants.ACTION_SERVICE_START
 import com.bikcodeh.distancetrackerapp.util.Extension.disable
 import com.bikcodeh.distancetrackerapp.util.Extension.hide
 import com.bikcodeh.distancetrackerapp.util.Extension.show
@@ -130,10 +133,21 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             }
 
             override fun onFinish() {
+                sendActionCommandToService(ACTION_SERVICE_START)
                 binding.tvTimer.hide()
             }
         }
         timer.start()
+    }
+
+    private fun sendActionCommandToService(action: String) {
+        Intent(
+            requireContext(),
+            TrackerService::class.java
+        ).apply {
+            this.action = action
+            requireContext().startService(this)
+        }
     }
 
     override fun onRequestPermissionsResult(
