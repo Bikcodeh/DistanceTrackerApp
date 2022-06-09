@@ -41,7 +41,7 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
-    EasyPermissions.PermissionCallbacks {
+    EasyPermissions.PermissionCallbacks, GoogleMap.OnMarkerClickListener {
 
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
@@ -53,6 +53,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     val started = MutableLiveData<Boolean>(false)
     private var polylineList = mutableListOf<Polyline>()
+    private var markerList = mutableListOf<Marker>()
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -92,6 +93,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         map = googleMap
         map.isMyLocationEnabled = true
         map.setOnMyLocationButtonClickListener(this)
+        map.setOnMarkerClickListener(this)
         map.uiSettings.apply {
             isZoomControlsEnabled = false
             isZoomGesturesEnabled = false
@@ -144,6 +146,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             2000,
             null
         )
+        addMarker(locationList.first())
+        addMarker(locationList.last())
+    }
+
+    private fun addMarker(position: LatLng) {
+        val marker = map.addMarker(
+            MarkerOptions().position(position)
+        )
+        marker?.let { markerList.add(it) }
     }
 
     private fun displayResults() {
@@ -177,10 +188,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             for (polyline in polylineList) {
                 polyline.remove()
             }
+            for (marker in markerList) {
+                marker.remove()
+            }
             map.animateCamera(CameraUpdateFactory.newCameraPosition(
                 setCameraPosition(lastKnownLocation)
             ))
             locationList.clear()
+            markerList.clear()
             binding.btnReset.hide()
             binding.btnStar.show()
         }
@@ -322,5 +337,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         } else {
             requestBackgroundLocationPermission(this)
         }
+    }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+        return true
     }
 }
